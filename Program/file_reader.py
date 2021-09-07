@@ -6,7 +6,7 @@ class FileReader:
     def read(file_name):
         file = open(file_name, "r")
         str_lines = file.readlines()
-        equations = [e.Equation]
+        equations = []
         for str_line in str_lines:
             line = str_line.replace('\n', "")
             line = line.split(" ")
