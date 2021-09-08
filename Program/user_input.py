@@ -9,5 +9,5 @@ class UserInput:
             return file.FileReader.read("EquationSystem.txt")
         if inp == 1:
             os.system('cls')
-            spec = input("How many variables?")
-            return eq.Generate
+            varCount = input("How many variables?")
+            return eq.EquationSystemGenerator.Generate(varCount)

@@ -55,6 +55,7 @@ class EquationSystem:
     def Solve(self):
         # A list of equations with 1, 2, 3 etc (possibly with a lowest value higher than 1 so that the solution
         # is written in terms of some parameters) so that the program can solve for some list of variables xi
+        eqs = copy.deepcopy(self.equations)
         solvables = []
         solution = [] * self.equations[1].GetLength()
         while not self.SmallestReduction():
@@ -62,21 +63,26 @@ class EquationSystem:
         if not solvables[len(solvables)-1].DefinesXi():
             raise NotImplemented
         solution = self.TurnIntoSolution(solvables)
-        p.Print.print_sollution(solution)
+        p.Print.print_sollution(eqs, solution)
 
     def TurnIntoSolution(self, solvs):
-        # currently only fives a correct value for the final variable in the equation, needs a way to substitute
-        # in solved variables in the following equations and then divide the rh_s by the coefficient of said variable
+        # currently only gives a correct value for the final variable in the equation, needs a way to substitute
+        # in solved variables in the following equations
         solution = []
         lan = solvs[0].lh_s_length
-        for i in range(1, lan):
+        for i in range(1, lan+1):
             if not solvs[lan-i].DefinesXi():
-                for sols in solution:
-                    fac = sols.lh_s[lan-i]
-                    sols.ReduceBySubstitute(fac, sols)
-            solution.append(solvs[lan-i])
+                EquationSystem.InputSolvedValues(solvs[lan-i], solution, lan-i)
+            solution.append(solvs[lan-i].rh_s)
         return solution
 
+    @staticmethod
+    def InputSolvedValues(toBeSolved, solvedVariables, finalIndex):
+        j = 0
+        lan = toBeSolved.lh_s_length
+        for i in range(1, lan - finalIndex):
+            toBeSolved.rh_s -= toBeSolved.lh_s[lan-i] * solvedVariables[i-1]
+            j += 1
 
 
     # Always goes from first to last variable, returns the equation that was used to substitute the system
