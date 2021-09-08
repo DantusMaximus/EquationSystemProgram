@@ -1,5 +1,5 @@
 # EquationSystemProgram
-# This program can solve specified or generated linear equation systems. To date it can only handle equation systems with a singular unparametirized sollution
+# This program can solve specified or generated linear equation systems. To date it can only handle equation systems with a singular unparameterized solution
 # Should you wish to see the solution (see if there is a unique sollution) for a given linear equation system, enter it in the file EquationSystem.txt with the following
 # convention:
 # x₀ + x₁ - 3x₂ + x₃  = 2
