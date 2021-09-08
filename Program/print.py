@@ -8,7 +8,7 @@ class Print:
             print(f"  = {equation.rh_s}")
         print("\nHas the solution:\n")
         for i in range(0, lan):
-            print(f"x{i} = {sol[lan-i-1]}")
+            print(f"x{Print.__translate_index(i)} = {sol[lan-i-1]}")
     @staticmethod
     def formatized(expressions):
         for i in range(0, len(expressions)):

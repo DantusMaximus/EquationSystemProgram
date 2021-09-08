@@ -9,7 +9,15 @@ class Equation:
     def __init__(self, x):
         self.lh_s = []
         for i in x:
-            frac = f.Fraction(i)
+            frac = f.Fraction(i).limit_denominator(10)
+            self.lh_s.append(frac)
+        self.lh_s_length = len(self.lh_s) - 1
+        self.rh_s = self.lh_s.pop(len(self.lh_s)-1)
+    # This constructor gets called when the program generates equations
+    def __init__(self, x, denomlimit):
+        self.lh_s = []
+        for i in x:
+            frac = f.Fraction(i).limit_denominator(denomlimit)
             self.lh_s.append(frac)
         self.lh_s_length = len(self.lh_s) - 1
         self.rh_s = self.lh_s.pop(len(self.lh_s)-1)
@@ -36,8 +44,6 @@ class Equation:
 
     def GetLength(self):
         return self.lh_s_length
-    def GetLhs(self):
-        return self.lh_s
     def GetRhs(self):
         return self.rh_s
 
@@ -53,15 +59,13 @@ class EquationSystem:
         self.equations = equations
 
     def Solve(self):
-        # A list of equations with 1, 2, 3 etc (possibly with a lowest value higher than 1 so that the solution
-        # is written in terms of some parameters) so that the program can solve for some list of variables xi
+        # Copies initial values so that they can be displayed when the equation system is solved
         eqs = copy.deepcopy(self.equations)
         solvables = []
-        solution = [] * self.equations[1].GetLength()
         while not self.SmallestReduction():
             solvables.append(self.Substitute())
         if not solvables[len(solvables)-1].DefinesXi():
-            raise NotImplemented
+            raise Exception("Solution requires parameter")
         solution = self.TurnIntoSolution(solvables)
         p.Print.print_sollution(eqs, solution)
 
@@ -95,6 +99,9 @@ class EquationSystem:
         return subst
 
     def FindSubstituteEquation(self):
+        # set to some high value so that the first equations first non zero coefficient becomes the initial candidate
+        # for the "best" equation to substitute with (assuring that there will always be some equation that gives a
+        # solution for the last variable)
         smallest_non_zero_index = 100
         # checks for the equation with the first non zeroed coefficient in lh_s
         for equation in self.equations:
@@ -105,10 +112,7 @@ class EquationSystem:
         return smallest_non_zero, smallest_non_zero_index
 
     def SmallestReduction(self):
-        val = self.equations[0]  # initializes, the actual value is nonsense
         for equation in self.equations:
-            if equation == val or equation.Zeroed():
-                continue
-            if equation != val or equation.Zeroed():
+            if not equation.Zeroed():
                 return False
         return True
