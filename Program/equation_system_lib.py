@@ -6,15 +6,8 @@ from Program import print as p
 class Equation:
 
     # All new instances of Equation should be given a list of fractions upon creation
-    def __init__(self, x):
-        self.lh_s = []
-        for i in x:
-            frac = f.Fraction(i).limit_denominator(10)
-            self.lh_s.append(frac)
-        self.lh_s_length = len(self.lh_s) - 1
-        self.rh_s = self.lh_s.pop(len(self.lh_s)-1)
     # This constructor gets called when the program generates equations
-    def __init__(self, x, denomlimit):
+    def __init__(self, x, denomlimit = 10000):
         self.lh_s = []
         for i in x:
             frac = f.Fraction(i).limit_denominator(denomlimit)
