@@ -1,4 +1,5 @@
 from Program import equation_system_lib as e
+from Program import file_writer as w
 import random
 class EquationSystemGenerator:
     @staticmethod
@@ -16,4 +17,5 @@ class EquationSystemGenerator:
                 lst.append(-1*random.uniform(10, 100))
             equation = e.Equation(lst, denomLim)
             equations.append(equation)
+        w.FileWriter.write("GeneratedEquationSystem.txt", equations)
         return e.EquationSystem(equations)
