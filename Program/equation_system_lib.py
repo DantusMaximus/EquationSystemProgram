@@ -51,14 +51,38 @@ class EquationSystem:
     def __init__(self, equations):
         self.equations = equations
 
+    def CheckForNoSolution(self):
+        def Parallel(eq1, eq2, factor):
+            for k in range(1, len(eq1.lh_s)):
+                if not factor * eq2.lh_s[k] == eq1.lh_s[k]:
+                    return False
+            return True
+        def FindFactor(lh_s1, lh_s2):
+            for i in range(0, len(lh_s1)):
+                if not lh_s2[i] == 0:
+                    return lh_s1[i] / lh_s2[i]
+
+        for i in range (0, 1 + int(len(self.equations)/2)):
+            for j in range(0, 1 + int(len(self.equations)/2)):
+                if i == j:
+                    continue
+                factor = FindFactor(self.equations[i].lh_s, self.equations[j].lh_s)
+                if Parallel(self.equations[i], self.equations[j], factor):
+                    if not (self.equations[i].rh_s / self.equations[j].rh_s == factor):
+                        raise Exception("Solution doesn't exist")
+                    raise Exception("Solution requires parameters")
+
     def Solve(self):
         # Copies initial values so that they can be displayed when the equation system is solved
+        self.CheckForNoSolution()
         eqs = copy.deepcopy(self.equations)
         solvables = []
         while not self.SmallestReduction():
             solvables.append(self.Substitute())
         if not solvables[len(solvables)-1].DefinesXi():
-            raise Exception("Solution requires parameter")
+            if len(solvables) < len(eqs):
+                raise Exception("Solution doesn't exist")
+            raise Exception("Solution requires parameters")
         solution = self.TurnIntoSolution(solvables)
         p.Print.print_sollution(eqs, solution)
 
@@ -98,10 +122,11 @@ class EquationSystem:
         smallest_non_zero_index = 100
         # checks for the equation with the first non zeroed coefficient in lh_s
         for equation in self.equations:
-            for i in range(0, self.equations[1].GetLength()):
+            for i in range(0, len(self.equations[1].lh_s)):
                 if equation.lh_s[i] != 0 and i < smallest_non_zero_index:
                     smallest_non_zero_index = i
-                    smallest_non_zero = copy.deepcopy(self.equations[smallest_non_zero_index])
+                    smallest_non_zero = copy.deepcopy(equation)
+                    break
         return smallest_non_zero, smallest_non_zero_index
 
     def SmallestReduction(self):
